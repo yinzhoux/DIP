@@ -1,0 +1,1 @@
+This is a digital image processing library.
