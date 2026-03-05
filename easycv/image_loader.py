@@ -1,6 +1,8 @@
 from PIL import Image as pig
 import numpy as np
 from matplotlib import pyplot as plt
+from .point_op import translation
+from copy import deepcopy
 class Image:
     def __init__(self):
         self.inited = False
@@ -18,7 +20,7 @@ class Image:
         
         if image_type == 'rgb':
             assert self.bands_cnt == 3
-            self.pixels = np.array(img.convert('RGB'))
+            self.pixels = np.array(img.convert('RGB')).transpose(2, 0, 1)
         elif image_type == "grey":
             assert self.bands_cnt == 1
             raise NotImplementedError
@@ -31,7 +33,8 @@ class Image:
 
         if image_type == 'rgb':
             assert pixels.shape[2] == 3, "rgb image must has three bands"
-            self.pixels = pixels
+            self.pixels = pixels.transpose(2, 0, 1)
+            self.pixels.transpose(2, 0, 1)
             self._bands = ['R', 'G', 'B']
         elif image_type == 'grey':
             assert pixels.shape[0] == 1, "greyband image must has one band"
@@ -45,7 +48,7 @@ class Image:
         '''
         Show the image with matplot library.
         '''
-        plt.imshow(self.pixels)
+        plt.imshow(self.pixels.transpose(1,2,0))
         # Turn off the axis showing.
         plt.axis('off')
         plt.show()
@@ -56,8 +59,15 @@ class Image:
         Parameters:
             @path_to_save: Path to save the image file.
         '''
-        plt.imsave(path_to_save)
+        plt.imsave(path_to_save, self.pixels.transpose(1,2,0))
 
+    def translation_band(self, band: str, delta: int):
+        assert band in self._bands, f'band {band} not exists.'
+        band_id = self._bands.index(band)
+        new_image = deepcopy(self)
+        new_image.pixels[band_id] = translation(new_image.pixels[band_id], delta)
+        return new_image
+    
     @property
     def size(self):
         '''
