@@ -12,7 +12,7 @@ class Image:
         Initialize a Image object with file.
         Parameters:
             @image_path: Path of the image to load.
-            @image_type: Type of the image to load ('rgb' or 'grey').
+            @image_type: Type of the image to load ('rgb' or 'grayscale').
         '''
 
         img = pig.open(image_path)
@@ -21,7 +21,7 @@ class Image:
         if image_type == 'rgb':
             assert self.bands_cnt == 3
             self.pixels = np.array(img.convert('RGB')).transpose(2, 0, 1)
-        elif image_type == "grey":
+        elif image_type == "grayscale":
             assert self.bands_cnt == 1
             raise NotImplementedError
 
@@ -36,8 +36,8 @@ class Image:
             self.pixels = pixels.transpose(2, 0, 1)
             self.pixels.transpose(2, 0, 1)
             self._bands = ['R', 'G', 'B']
-        elif image_type == 'grey':
-            assert pixels.shape[0] == 1, "greyband image must has one band"
+        elif image_type == 'grayscale':
+            assert pixels.shape[0] == 1, "grayband image must has one band"
             self.pixels = pixels
             self._bands = ['Brightness']
         
@@ -53,15 +53,29 @@ class Image:
         plt.axis('off')
         plt.show()
 
-    def save_to(self, path_to_save: str):
+    def save_to(self, path_to_save: str, convert_to_grayscale: bool = False):
         '''
         Save image file.
         Parameters:
             @path_to_save: Path to save the image file.
+            @convert_to_grayscale: If original image is RGB, save the grayscale
+                image if True.
         '''
-        plt.imsave(path_to_save, self.pixels.transpose(1,2,0))
+        if self._image_type == 'rgb':
+            if not convert_to_grayscale:
+                plt.imsave(path_to_save, self.pixels.transpose(1,2,0))
+            else:
+                plt.imsave(path_to_save, self.pixels.transpose(1,2,0).mean(axis=2), cmap='gray', vmin=0, vmax=255)
+        elif self._image_type == 'grayscale':
+            plt.imsave(path_to_save, self.pixels.transpose(1,2,0).squeeze())
 
     def translation_band(self, band: str, delta: int):
+        '''
+        Translate band curve.
+        Parameters:
+            @band: Band to translate. For RGB image, it's element in
+                   ['R', 'G', 'B'].
+        '''
         assert band in self._bands, f'band {band} not exists.'
         band_id = self._bands.index(band)
         new_image = deepcopy(self)
@@ -79,7 +93,7 @@ class Image:
     @property
     def type(self):
         '''
-        Type of the image.('rgb' or 'grey')
+        Type of the image.('rgb' or 'gray')
         '''
         return self._image_type
     @property
