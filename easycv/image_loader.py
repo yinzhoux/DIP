@@ -2,14 +2,16 @@ from PIL import Image as pig
 import numpy as np
 from matplotlib import pyplot as plt
 class Image:
-    def __init__(self, image_path: str, image_type: str):
+    def __init__(self):
+        self.inited = False
+
+    def from_file(self, image_path: str, image_type: str):
         '''
-        Initialize a Image object.
+        Initialize a Image object with file.
         Parameters:
             @image_path: Path of the image to load.
             @image_type: Type of the image to load ('rgb' or 'grey').
         '''
-        self._image_type = image_type
 
         img = pig.open(image_path)
         self._bands = img.getbands()
@@ -17,9 +19,27 @@ class Image:
         if image_type == 'rgb':
             assert self.bands_cnt == 3
             self.pixels = np.array(img.convert('RGB'))
-        elif image_type == "gray":
+        elif image_type == "grey":
             assert self.bands_cnt == 1
             raise NotImplementedError
+
+        self._image_type = image_type
+        self.inited = True
+
+    def from_array(self, pixels: np.ndarray, image_type: str):
+        assert pixels.ndim == 3, 'pixels must has the shape [height, width, band]'
+
+        if image_type == 'rgb':
+            assert pixels.shape[2] == 3, "rgb image must has three bands"
+            self.pixels = pixels
+            self._bands = ['R', 'G', 'B']
+        elif image_type == 'grey':
+            assert pixels.shape[0] == 1, "greyband image must has one band"
+            self.pixels = pixels
+            self._bands = ['Brightness']
+        
+        self._image_type = image_type
+        self.inited = True
 
     def show(self):
         '''
