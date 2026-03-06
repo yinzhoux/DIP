@@ -130,8 +130,8 @@ class Image:
         assert delta >= -255 and delta <= 255, 'delta must between -255~255.'
         
         new_img = deepcopy(self)
-        for band in self.bands:
-            new_img = new_img.translation_band(band, delta)
+        for band_id in range(new_img.bands_cnt):
+            new_img.pixels[band_id] = translation(new_img.pixels[band_id], delta)
         return new_img
     
     def contrast_edit(self, fix: int, slope: float):
@@ -142,8 +142,8 @@ class Image:
             @slope: Slope value of rotating.
         '''
         new_img = deepcopy(self)
-        for band in self.bands:
-            new_img = new_img.rotation_band(band, fix, slope)
+        for band_id in range(new_img.bands_cnt):
+            new_img.pixels[band_id] = rotation(new_img.pixels[band_id], fix, slope)
         return new_img
         
     @property
