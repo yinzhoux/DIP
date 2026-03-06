@@ -36,8 +36,8 @@ class Image:
             self.pixels = pixels.transpose(2, 0, 1)
             self._bands = ['R', 'G', 'B']
         elif image_type == 'grayscale':
-            assert pixels.shape[0] == 1, "grayband image must has one band"
-            self.pixels = pixels
+            assert pixels.shape[2] == 1, "grayscale image must has one band"
+            self.pixels = pixels.transpose(2, 0, 1)
             self._bands = ['Brightness']
         
         self._image_type = image_type
