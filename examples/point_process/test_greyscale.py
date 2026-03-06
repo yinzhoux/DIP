@@ -1,4 +1,4 @@
-from easycv.image_loader import Image
+from easycv.image import Image
 
 image_path = '../images/stranthen.jpg'
 image = Image()

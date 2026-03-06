@@ -1,5 +1,5 @@
 import numpy as np
-from easycv.image_loader import Image
+from easycv.image import Image
 import matplotlib.pyplot as plt
 
 height, width = 256, 256

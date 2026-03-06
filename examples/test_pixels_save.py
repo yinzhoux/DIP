@@ -1,4 +1,4 @@
-from easycv.image_loader import Image
+from easycv.image import Image
 
 img = Image()
 img.from_file('../images/stranthen.jpg', image_type='rgb')
