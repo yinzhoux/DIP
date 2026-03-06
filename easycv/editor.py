@@ -1,6 +1,6 @@
 from .image import Image
 from copy import deepcopy
-from .point_op import translation, rotation
+from .operators.point_op import translation, rotation
 class ImageEditor:
     def __init__(self):
         pass

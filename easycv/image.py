@@ -1,8 +1,6 @@
 from PIL import Image as pig
 import numpy as np
 from matplotlib import pyplot as plt
-from .point_op import translation, rotation
-from copy import deepcopy
 class Image:
     def __init__(self):
         self.inited = False
