@@ -34,7 +34,6 @@ class Image:
         if image_type == 'rgb':
             assert pixels.shape[2] == 3, "rgb image must has three bands"
             self.pixels = pixels.transpose(2, 0, 1)
-            self.pixels.transpose(2, 0, 1)
             self._bands = ['R', 'G', 'B']
         elif image_type == 'grayscale':
             assert pixels.shape[0] == 1, "grayband image must has one band"
