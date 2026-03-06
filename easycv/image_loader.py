@@ -49,7 +49,7 @@ class Image:
         '''
         if self._image_type == 'rgb':
             plt.imshow(self.pixels.transpose(1,2,0))
-        elif self._image_type == 'gray':
+        elif self._image_type == 'grayscale':
             plt.imshow(self.pixels.squeeze(), cmap='gray', vmin=0, vmax=255)
         # Turn off the axis showing.
         plt.axis('off')
@@ -94,11 +94,11 @@ class Image:
         Parameters:
             @band: Band to translate. For RGB image, it's element in
                    ['R', 'G', 'B'].
-            @delta: value of translation. Must between -255~255.\
+            @delta: value of translation. Must be between -255 and 255.
         Return:
             New image after translation.
         '''
-        assert delta >= -255 and delta <= 255, 'delta must between -255~255.'
+        assert delta >= -255 and delta <= 255, 'delta must be between -255 and 255.'
         assert band in self._bands, f'band {band} not exists.'
         band_id = self._bands.index(band)
         new_image = deepcopy(self)
@@ -130,7 +130,7 @@ class Image:
         Return:
             New image after brightness editing.
         '''
-        assert delta >= -255 and delta <= 255, 'delta must between -255~255.'
+        assert delta >= -255 and delta <= 255, 'delta must be between -255 and 255.'
         
         new_img = deepcopy(self)
         for band_id in range(new_img.bands_cnt):
@@ -160,7 +160,7 @@ class Image:
     @property
     def type(self):
         '''
-        Type of the image.('rgb' or 'gray')
+        Type of the image.('rgb' or 'grayscale')
         '''
         return self._image_type
     @property
