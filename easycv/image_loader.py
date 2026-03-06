@@ -1,7 +1,7 @@
 from PIL import Image as pig
 import numpy as np
 from matplotlib import pyplot as plt
-from .point_op import translation
+from .point_op import translation, rotation
 from copy import deepcopy
 class Image:
     def __init__(self):
@@ -69,19 +69,84 @@ class Image:
         elif self._image_type == 'grayscale':
             plt.imsave(path_to_save, self.pixels.transpose(1,2,0).squeeze())
 
+    def save_pixels_to(self, path_to_save: str, convert_to_grayscale: bool = False):
+        '''
+        Save image pixels file.
+        Parameters:
+            @path_to_save: Path to save the image file.
+            @convert_to_grayscale: If original image is RGB, save the grayscale
+                image if True.
+        '''
+        if self._image_type == 'rgb':
+            if not convert_to_grayscale:
+                np.save(path_to_save, self.pixels.transpose(1,2,0))
+            else:
+                np.save(path_to_save, self.pixels.transpose(1,2,0).mean(axis=2))
+        elif self._image_type == 'grayscale':
+            np.save(path_to_save, self.pixels.transpose(1,2,0).squeeze())
+
+
     def translation_band(self, band: str, delta: int):
         '''
         Translate band curve.
         Parameters:
             @band: Band to translate. For RGB image, it's element in
                    ['R', 'G', 'B'].
+            @delta: value of translation. Must between -255~255.\
+        Return:
+            New image after translation.
         '''
+        assert delta >= -255 and delta <= 255, 'delta must between -255~255.'
         assert band in self._bands, f'band {band} not exists.'
         band_id = self._bands.index(band)
         new_image = deepcopy(self)
         new_image.pixels[band_id] = translation(new_image.pixels[band_id], delta)
         return new_image
     
+    def rotation_band(self, band: str, fix: int, slope: float):
+        '''
+        Rotate band curve.
+        Parameters:
+            @band: Band to rotate. For RGB image, it's element in
+                   ['R', 'G', 'B'].
+            @fix: Fixed point value when rotating.
+            @slope: Slope value of rotating.
+        '''
+        assert band in self._bands, f'band {band} not exists.'
+        # it's ok that fix value out of range(0, 255).
+        
+        band_id = self._bands.index(band)
+        new_image = deepcopy(self)
+        new_image.pixels[band_id] = rotation(new_image.pixels[band_id], fix, slope)
+        return new_image
+    
+    def brightness_edit(self, delta: int):
+        '''
+        Increase or decrease brightness.
+        Parameters: 
+            @delta: value of translation. Must between -255~255.
+        Return:
+            New image after brightness editing.
+        '''
+        assert delta >= -255 and delta <= 255, 'delta must between -255~255.'
+        
+        new_img = deepcopy(self)
+        for band in self.bands:
+            new_img = new_img.translation_band(band, delta)
+        return new_img
+    
+    def contrast_edit(self, fix: int, slope: float):
+        '''
+        Increase or decrease contrast.
+        Parameters:
+            @fix: Fixed point value when rotating.
+            @slope: Slope value of rotating.
+        '''
+        new_img = deepcopy(self)
+        for band in self.bands:
+            new_img = new_img.rotation_band(band, fix, slope)
+        return new_img
+        
     @property
     def size(self):
         '''
