@@ -47,7 +47,10 @@ class Image:
         '''
         Show the image with matplot library.
         '''
-        plt.imshow(self.pixels.transpose(1,2,0))
+        if self._image_type == 'rgb':
+            plt.imshow(self.pixels.transpose(1,2,0))
+        elif self._image_type == 'gray':
+            plt.imshow(self.pixels.squeeze(), cmap='gray', vmin=0, vmax=255)
         # Turn off the axis showing.
         plt.axis('off')
         plt.show()
@@ -66,7 +69,7 @@ class Image:
             else:
                 plt.imsave(path_to_save, self.pixels.transpose(1,2,0).mean(axis=2), cmap='gray', vmin=0, vmax=255)
         elif self._image_type == 'grayscale':
-            plt.imsave(path_to_save, self.pixels.transpose(1,2,0).squeeze())
+            plt.imsave(path_to_save, self.pixels.transpose(1,2,0).squeeze(), cmap='gray', vmin=0, vmax=255)
 
     def save_pixels_to(self, path_to_save: str, convert_to_grayscale: bool = False):
         '''
