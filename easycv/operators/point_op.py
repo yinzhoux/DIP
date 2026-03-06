@@ -1,4 +1,5 @@
 import numpy as np  
+import math
 
 def translation(pixels: np.ndarray, delta: int):
     assert pixels.ndim == 2, f'input has the shape {pixels.shape}, point process only deals with single band'
@@ -13,3 +14,15 @@ def rotation(pixels: np.ndarray, fix: int, slope: float):
     rotated = (pixels.astype('float32') - fix) * slope + fix    
     rotated = rotated.clip(0, 255).astype('uint8')
     return rotated
+
+def stretch(pixels: np.ndarray, min: int = 0, max: int = 255):
+    assert pixels.ndim == 2, f'input has the shape {pixels.shape}, point process only deals with single band'
+    assert pixels.dtype == 'uint8', 'point value must has type uint8'
+    assert min < max and min >= 0 and max <= 255, 'stretch range error.'
+
+    Imin: int = pixels.min()
+    Imax: int = pixels.max()
+
+    ratio = (pixels.astype('float16') - Imin) / np.max([(Imax - Imin), 1])
+    new_pixels =  ratio * (max - min) + min
+    return new_pixels.clip(min, max).astype('uint8')

@@ -6,10 +6,9 @@ drawer = ImageDrawer()
 
 img = Image()
 img.from_file('../../images/stranthen.jpg', image_type='rgb')
-img_contrast_1 = editor.contrast_edit(img, 64, 1.8)
-img_contrast_2 = editor.contrast_edit(img, 127, 1.8)
-img_contrast_3 = editor.contrast_edit(img, 192, 1.8)
 
+img1 = editor.stretch_band(img, 'R', 50, 255)
+img2 =editor.stretch(img, 0, 255)
 drawer.show([
-    img, img_contrast_1, img_contrast_2, img_contrast_3
-], figsize=(14,14))
+    img, img1, img2
+])

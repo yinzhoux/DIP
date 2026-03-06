@@ -1,6 +1,6 @@
 from .image import Image
 from copy import deepcopy
-from .operators.point_op import translation, rotation
+from .operators.point_op import translation, rotation, stretch
 class ImageEditor:
     def __init__(self):
         pass
@@ -34,6 +34,7 @@ class ImageEditor:
             @fix: Fixed point value when rotating.
             @slope: Slope value of rotating.
         '''
+        assert image.inited, 'Image does not be initialized.'
         assert band in image.bands, f'band {band} not exists.'
         # it's ok that fix value out of range(0, 255).
         
@@ -42,6 +43,24 @@ class ImageEditor:
         new_image.pixels[band_id] = rotation(new_image.pixels[band_id], fix, slope)
         return new_image
     
+    def stretch_band(self, image: Image, band: str, min: int = 0, max: int = 255):
+        '''
+        Remap value range.
+        Parameters:
+            @image: Image to edit.
+            @band: Band to stretch.
+            @min: minimum of new range.
+            @max: maximum of new range.
+        '''
+        assert image.inited, 'image is not initialized.'
+        assert band in image.bands, f'band {band} not exists.'
+        assert min < max and min >= 0 and max <= 255, 'stretch map range error.'
+
+        band_id = image.bands.index(band)
+        new_image = deepcopy(image)
+        new_image.pixels[band_id] = stretch(new_image.pixels[band_id], min, max)
+        return new_image
+
     def brightness_edit(self, image: Image, delta: int):
         '''
         Increase or decrease brightness.
@@ -71,3 +90,19 @@ class ImageEditor:
             new_img.pixels[band_id] = rotation(new_img.pixels[band_id], fix, slope)
         return new_img
         
+    def stretch(self, image: Image, min: int = 0, max: int = 255):
+        '''
+        Contrast stretch.
+        Parameters:
+            @image: Image to edit.
+            @min: minimum of new range.
+            @max: maximum of new range.
+        '''
+
+        assert image.inited, 'image is not initialized.'
+        assert min < max and min >= 0 and max <= 255, 'stretch range error.'
+
+        new_image = deepcopy(image)
+        for band_id in range(new_image.bands_cnt):
+            new_image.pixels[band_id] = stretch(new_image.pixels[band_id], min, max)
+        return new_image
