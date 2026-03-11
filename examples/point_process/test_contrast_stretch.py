@@ -9,6 +9,7 @@ img.from_file('../../images/stranthen.jpg', image_type='rgb')
 
 img1 = editor.stretch_band(img, 'R', 50, 255)
 img2 =editor.stretch(img, 0, 255)
+img3 = editor.stretch_band(img, 'R', 50, 200)
 drawer.show([
-    img, img1, img2
+    img, img1, img2, img3
 ])
