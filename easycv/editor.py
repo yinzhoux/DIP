@@ -1,6 +1,6 @@
 from .image import Image
 from copy import deepcopy
-from .operators.point_op import translation, rotation, stretch
+from .operators.point_op import translation, rotation, stretch, gamma_trans
 class ImageEditor:
     def __init__(self):
         pass
@@ -60,6 +60,24 @@ class ImageEditor:
         new_image = deepcopy(image)
         new_image.pixels[band_id] = stretch(new_image.pixels[band_id], min, max)
         return new_image
+    
+    def gamma_band(self, image: Image, band: str, gamma: float):
+        '''
+        Gamma compressing or expansion on single band.
+        Parameters:
+            @image
+            @band
+            @gamma
+        '''
+
+        assert image.inited, 'image is not initialized.'
+        assert band in image.bands, f'band {band} not exists.'
+        assert gamma >= 0, f'gamma {gamma} < 0.'
+
+        band_id = image.bands.index(band)
+        new_image = deepcopy(image)
+        new_image.pixels[band_id] = gamma_trans(new_image.pixels[band_id], gamma)
+        return new_image
 
     def brightness_edit(self, image: Image, delta: int):
         '''
@@ -106,3 +124,18 @@ class ImageEditor:
         for band_id in range(new_image.bands_cnt):
             new_image.pixels[band_id] = stretch(new_image.pixels[band_id], min, max)
         return new_image
+    
+    def gamma_edit(self, image: Image, gamma: float = 1):
+        '''
+        Gamma expansion or compression.
+        Parameters:
+            @image: Image to edit.
+            @gamma
+        '''
+
+        assert gamma >= 0
+        new_img = deepcopy(image)
+        for band_id in range(new_img.bands_cnt):
+            new_img.pixels[band_id] = gamma_trans(new_img.pixels[band_id], gamma)
+        return new_img
+
