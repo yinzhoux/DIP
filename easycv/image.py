@@ -2,6 +2,9 @@ from PIL import Image as pig
 import numpy as np
 from matplotlib import pyplot as plt
 class Image:
+    inited = False
+    __histogram__ = None
+
     def __init__(self):
         self.inited = False
 
@@ -48,19 +51,6 @@ class Image:
             self.image_name = 'image_from_pixels'
         else:
             self.image_name = image_name
-
-
-    def show(self):
-        '''
-        Show the image with matplot library.
-        '''
-        if self._image_type == 'rgb':
-            plt.imshow(self.pixels.transpose(1,2,0))
-        elif self._image_type == 'grayscale':
-            plt.imshow(self.pixels.squeeze(), cmap='gray', vmin=0, vmax=255)
-        # Turn off the axis showing.
-        plt.axis('off')
-        plt.show()
 
     def save_to(self, path_to_save: str, convert_to_grayscale: bool = False):
         '''
@@ -123,4 +113,19 @@ class Image:
             If the image has the type of 'rgb', this property will be ['R', 'G', 'B'].
         '''
         return self._bands
+    
+    @property
+    def histogram(self):
+        '''
+        Get the histogram of all the bands of the image.
+        '''
+        if self.__histogram__ == None:
+            assert self.inited, 'Image not initialized.'
+            self.__histogram__ = []
+            for band_id in range(self.bands_cnt):
+                histo, _ = np.histogram(self.pixels[band_id], bins=256, range=(0,256))
+                self.__histogram__.append(histo)
+
+        return self.__histogram__
+    
 #endregion property
