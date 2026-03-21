@@ -124,6 +124,7 @@ class Image:
             self.__histogram__ = []
             for band_id in range(self.bands_cnt):
                 histo, _ = np.histogram(self.pixels[band_id], bins=256, range=(0,256))
+                histo = histo.astype(np.float32) / (np.sum(histo))
                 self.__histogram__.append(histo)
 
         return self.__histogram__
