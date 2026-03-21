@@ -7,7 +7,13 @@ drawer = ImageDrawer()
 img = Image()
 img.from_file('../../images/stranthen.jpg', image_type='rgb')
 img1 = editor.translation_band(img, band='R', delta=100)
-# print(img.histogram)
-drawer.show_histogram([
+
+drawer.show([
     img, img1
-], figsize=(10, 5))
+])
+drawer.show_pdf([
+    img, img1
+])
+drawer.show_cdf([
+    img, img1
+])

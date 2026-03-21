@@ -3,7 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 class Image:
     inited = False
-    __histogram__ = None
+    __pdf__ = None
+    __cdf__ = None
 
     def __init__(self):
         self.inited = False
@@ -115,18 +116,32 @@ class Image:
         return self._bands
     
     @property
-    def histogram(self):
+    def PDF(self):
         '''
         Get the histogram of all the bands of the image.
         '''
-        if self.__histogram__ == None:
+        if self.__pdf__ is None:
             assert self.inited, 'Image not initialized.'
-            self.__histogram__ = []
+            self.__pdf__ = []
             for band_id in range(self.bands_cnt):
                 histo, _ = np.histogram(self.pixels[band_id], bins=256, range=(0,256))
                 histo = histo.astype(np.float32) / (np.sum(histo))
-                self.__histogram__.append(histo)
+                self.__pdf__.append(histo)
+            self.__pdf__ = np.array(self.__pdf__)
 
-        return self.__histogram__
+        return self.__pdf__
+    
+    @property
+    def CDF(self):
+        '''
+        Get the cumulative density function of the image pixel values. 
+        '''
+        if self.__cdf__ is None:
+            assert self.inited, 'Image not initialized.'
+            mask = np.tri(256, 256, dtype=np.float32)
+            mask = np.transpose(mask)
+            self.__cdf__ = self.PDF @ mask
+
+        return self.__cdf__
     
 #endregion property
