@@ -1,4 +1,4 @@
-from easycv.image_loader import Image
+from easycv.image import Image
 import numpy as np  
 
 pixels = [
