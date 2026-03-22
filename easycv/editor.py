@@ -1,6 +1,8 @@
 from .image import Image
+import numpy as np
 from copy import deepcopy
 from .operators.point_op import translation, rotation, stretch, gamma_trans
+from .operators.distri_op import PDF2LUT
 class ImageEditor:
     def __init__(self):
         pass
@@ -69,7 +71,6 @@ class ImageEditor:
             @band
             @gamma
         '''
-
         assert image.inited, 'image is not initialized.'
         assert band in image.bands, f'band {band} not exists.'
         assert gamma >= 0, f'gamma {gamma} < 0.'
@@ -77,6 +78,28 @@ class ImageEditor:
         band_id = image.bands.index(band)
         new_image = deepcopy(image)
         new_image.pixels[band_id] = gamma_trans(new_image.pixels[band_id], gamma)
+        return new_image
+    
+    def histogram_match_band(self, image: Image, band: str, target: np.array):
+        '''
+        Match specific band of image to target distribution.
+        Parameters:
+            @image: Image to edit.
+            @band: Band to edit. For RGB image, the value is 'R', 'G' or 'B'.
+                   For grayscale image, the value is 'grayscale'.
+            @target: The target distribution to match. It's a PDF array.
+        '''
+        assert target.shape[0] == 256 and \
+               target.ndim == 1, f'target distribution invalid format'
+        
+        band_id = image.bands.index(band)
+        new_image = deepcopy(image)
+        
+        src_dist = new_image.PDF[band_id]
+        dst_dist = target
+        lut = PDF2LUT(src_dist, dst_dist)
+        new_image.pixels[band_id] = lut[new_image.pixels[band_id]]
+        new_image.pixels = np.array(new_image.pixels)
         return new_image
 
     def brightness_edit(self, image: Image, delta: int):
@@ -138,4 +161,31 @@ class ImageEditor:
         for band_id in range(new_img.bands_cnt):
             new_img.pixels[band_id] = gamma_trans(new_img.pixels[band_id], gamma)
         return new_img
+    
+    def histogram_matching(self, image: Image, target: Image):
+        '''
+        Histogram matching from `target` to `image`.
+        @Parameters:
+            @image
+            @target
+        '''
 
+        assert image.bands_cnt == target.bands_cnt, f'image type dismach.'
+
+        new_image = deepcopy(image)
+        src_dist = image.PDF
+        dst_dist = target.PDF
+
+        luts = [
+            PDF2LUT(src_dist[i], dst_dist[i])
+            for i in range(image.bands_cnt)
+        ]
+
+        new_image.pixels = [
+            luts[i][new_image.pixels[i]]
+            for i in range(new_image.bands_cnt)
+        ]
+
+        new_image.pixels = np.array(new_image.pixels).clip(max=255, min=0)
+
+        return new_image
