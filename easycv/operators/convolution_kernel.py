@@ -59,6 +59,51 @@ class Kernel:
             [0,2,0],
             [-1,0,0]
         ]) 
+    
+    @staticmethod
+    def PrewittKernel(vertial: bool = True):
+        if vertial:
+            return np.array([
+                [-1, 0, 1],
+                [-1, 0, 1],
+                [-1, 0, 1],
+            ])
+        else:
+            return np.array([
+                [-1,-1,-1],
+                [0,0,0],
+                [1,1,1]
+            ])
+        
+    @staticmethod
+    def SobelKernel(vertical: bool = True):
+        if vertical:
+            return np.array([
+                [-1,0,1],
+                [-2,0,2],
+                [-1,0,1]
+            ])
+        else:
+            return np.array([
+                [-1,-2,-1],
+                [0,0,0],
+                [1,2,1]
+            ])
+
+    @staticmethod
+    def IsotroficSobelKernel(vertical: bool = True):
+        if vertical:
+            return np.array([
+                [-1,0,1],
+                [-1.414, 0, 1.414],
+                [-1,0,1]
+            ])
+        else:
+            return np.array([
+                [-1,-1.414,-1],
+                [0,0,0],
+                [1,1.414,1]
+            ])
 
     @staticmethod
     def iskernel(kernel: np.array):
