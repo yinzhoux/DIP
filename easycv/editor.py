@@ -2,11 +2,10 @@ from .image import Image
 import numpy as np
 from copy import deepcopy
 from .operators.point_op import translation, rotation, stretch, gamma_trans
-from .operators.distri_op import PDF2LUT
+from .operators.distribution_op import PDF2LUT
+from .operators.convolution_kernel import Kernel
+from .operators.convolution_op import apply_filter_to_image, apply_filter_to_band
 class ImageEditor:
-    def __init__(self):
-        pass
-
     def translation_band(self, image: Image, band: str, delta: int):
         '''
         Translate band curve.
@@ -102,6 +101,26 @@ class ImageEditor:
         new_image.pixels = np.array(new_image.pixels)
         return new_image
 
+    def conv_band(self, image: Image, band: str, kernel: np.array):
+        '''
+        Perform filter with kernel on image. Stride must be (1,1) to ensure
+        the convoluted band has the same shape with the original band.
+        Parameters:
+            @image: image to be filtered.
+            @band: Band to edit. For RGB image, the value is 'R', 'G' or 'B'.
+                   For grayscale image, the value is 'grayscale'.
+            @kernel: np.array. Must be 2 dimension.
+            @padding
+        '''
+        assert Kernel.iskernel(kernel), f'invalid kernel.'
+        
+        new_img = deepcopy(image)
+        band_id = new_img.bands.index(band)
+        convoluted_band = apply_filter_to_band(new_img.pixels[band_id], kernel)
+        assert convoluted_band.shape == new_img.size, f'convoluted band shape {convoluted_band.shape} do not match the original band shape {new_img.size}'
+        new_img.pixels[band_id] = convoluted_band
+        return new_img
+
     def brightness_edit(self, image: Image, delta: int):
         '''
         Increase or decrease brightness.
@@ -189,3 +208,17 @@ class ImageEditor:
         new_image.pixels = np.array(new_image.pixels).clip(max=255, min=0)
 
         return new_image
+    
+    def conv(self, image: Image, kernel: np.array):
+        '''
+        Convert the image to grayscale and perform convolution on it.
+        Parameters:
+            @image: image to perform convolution.
+            @kernel
+            @stride
+            @padding
+        '''
+
+        new_img = deepcopy(image)
+        new_img.pixels = apply_filter_to_image(new_img.pixels.transpose(1,2,0), kernel).transpose(2,0,1)
+        return new_img
