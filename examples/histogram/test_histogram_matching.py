@@ -1,7 +1,7 @@
 from easycv.image import Image
 from easycv.editor import ImageEditor
 from easycv.drawer import ImageDrawer
-from easycv.operators.distri_op import Distribution
+from easycv.operators.distribution_op import Distribution
 
 import numpy as np
 
