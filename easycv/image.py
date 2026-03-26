@@ -25,7 +25,7 @@ class Image:
             self.pixels = np.array(img.convert('RGB')).transpose(2, 0, 1).clip(max=255, min=0)
         elif image_type == "grayscale":
             assert self.bands_cnt == 1
-            raise NotImplementedError
+            self.pixels = np.array(img.convert(mode='L')).clip(max=255, min=0)
 
         self._image_type = image_type
         self.inited = True
@@ -63,11 +63,15 @@ class Image:
         '''
         if self._image_type == 'rgb':
             if not convert_to_grayscale:
-                plt.imsave(path_to_save, self.pixels.transpose(1,2,0))
+                img = pig.fromarray(self.pixels.transpose(1,2,0))
+                img.save(path_to_save)
             else:
-                plt.imsave(path_to_save, self.pixels.transpose(1,2,0).mean(axis=2), cmap='gray', vmin=0, vmax=255)
+                img = pig.fromarray(self.pixels.transpose(1,2,0).mean(axis=2).astype(np.uint8), mode='L')
+                img.save(path_to_save)
+
         elif self._image_type == 'grayscale':
-            plt.imsave(path_to_save, self.pixels.transpose(1,2,0).squeeze(), cmap='gray', vmin=0, vmax=255)
+            img = pig.fromarray(self.pixels, mode='L')
+            img.save(path_to_save)
 
     def save_pixels_to(self, path_to_save: str, convert_to_grayscale: bool = False):
         '''
@@ -85,6 +89,18 @@ class Image:
         elif self._image_type == 'grayscale':
             np.save(path_to_save, self.pixels.transpose(1,2,0).squeeze())
 
+    def to_grayscale(self):
+        '''
+        Convert the image to grayscale image.
+        @Return:
+            Image with type of grayscale.
+        '''
+        pixels = np.mean(self.pixels, axis=0, keepdims=True)
+        new_img = Image()
+        new_img.from_array(pixels.transpose((1,2,0)), image_type='grayscale', image_name=self.image_name+'-grayscale')
+
+        return new_img
+
 #region property
     @property
     def size(self):
@@ -93,7 +109,7 @@ class Image:
         Return:
             [Height, Width].
         '''
-        return self.pixels.shape[:2]
+        return self.pixels.shape[1:]
     @property
     def type(self):
         '''
@@ -112,6 +128,7 @@ class Image:
         Band names of the image.
         Example:
             If the image has the type of 'rgb', this property will be ['R', 'G', 'B'].
+            For grayscale image, the property will be ['Brightness']
         '''
         return self._bands
     
