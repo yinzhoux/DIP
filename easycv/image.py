@@ -6,52 +6,58 @@ class Image:
     __pdf__ = None
     __cdf__ = None
 
-    def __init__(self):
-        self.inited = False
-
-    def from_file(self, image_path: str, image_type: str, image_name: str = None):
+    @staticmethod
+    def from_file(image_path: str, image_type: str, image_name: str = None):
         '''
         Initialize a Image object with file.
         Parameters:
             @image_path: Path of the image to load.
             @image_type: Type of the image to load ('rgb' or 'grayscale').
         '''
+        to_return = Image()
 
         img = pig.open(image_path)
-        self._bands = img.getbands()
+        to_return._bands = img.getbands()
         
         if image_type == 'rgb':
-            assert self.bands_cnt == 3
-            self.pixels = np.array(img.convert('RGB')).transpose(2, 0, 1).clip(max=255, min=0)
+            assert to_return.bands_cnt == 3
+            to_return.pixels = np.array(img.convert('RGB')).transpose(2, 0, 1).clip(max=255, min=0)
         elif image_type == "grayscale":
-            assert self.bands_cnt == 1
-            self.pixels = np.array(img.convert(mode='L')).clip(max=255, min=0)
+            assert to_return.bands_cnt == 1
+            to_return.pixels = np.array(img.convert(mode='L')).clip(max=255, min=0)
 
-        self._image_type = image_type
-        self.inited = True
+        to_return._image_type = image_type
+        to_return.inited = True
         if image_name == None:
-            self.image_name = image_path
+            to_return.image_name = image_path
         else:
-            self.image_name = image_name
+            to_return.image_name = image_name
 
-    def from_array(self, pixels: np.ndarray, image_type: str, image_name: str = None):
+        return to_return
+
+    @staticmethod
+    def from_array(pixels: np.ndarray, image_type: str, image_name: str = None):
         assert pixels.ndim == 3, 'pixels must has the shape [height, width, band]'
+
+        to_return = Image()
 
         if image_type == 'rgb':
             assert pixels.shape[2] == 3, "rgb image must has three bands"
-            self.pixels = pixels.transpose(2, 0, 1)
-            self._bands = ['R', 'G', 'B']
+            to_return.pixels = pixels.transpose(2, 0, 1)
+            to_return._bands = ['R', 'G', 'B']
         elif image_type == 'grayscale':
             assert pixels.shape[2] == 1, "grayscale image must has one band"
-            self.pixels = pixels.transpose(2, 0, 1)
-            self._bands = ['Brightness']
+            to_return.pixels = pixels.transpose(2, 0, 1)
+            to_return._bands = ['Brightness']
         
-        self._image_type = image_type
-        self.inited = True
+        to_return._image_type = image_type
+        to_return.inited = True
         if image_name == None:
-            self.image_name = 'image_from_pixels'
+            to_return.image_name = 'image_from_pixels'
         else:
-            self.image_name = image_name
+            to_return.image_name = image_name
+
+        return to_return
 
     def save_to(self, path_to_save: str, convert_to_grayscale: bool = False):
         '''
@@ -95,7 +101,7 @@ class Image:
         @Return:
             Image with type of grayscale.
         '''
-        pixels = np.mean(self.pixels, axis=0, keepdims=True)
+        pixels = np.mean(self.pixels, axis=0, keepdims=True).clip(0,255).astype(np.uint8)
         new_img = Image()
         new_img.from_array(pixels.transpose((1,2,0)), image_type='grayscale', image_name=self.image_name+'-grayscale')
 

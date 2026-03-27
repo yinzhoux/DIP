@@ -6,7 +6,8 @@ from .operators.distribution_op import PDF2LUT
 from .operators.convolution_kernel import Kernel
 from .operators.convolution_op import apply_filter_to_image, apply_filter_to_band
 class ImageEditor:
-    def translation_band(self, image: Image, band: str, delta: int):
+    @staticmethod
+    def translation_band(image: Image, band: str, delta: int):
         '''
         Translate band curve.
         Parameters:
@@ -25,7 +26,8 @@ class ImageEditor:
         new_image.pixels[band_id] = translation(new_image.pixels[band_id], delta)
         return new_image
     
-    def rotation_band(self, image: Image, band: str, fix: int, slope: float):
+    @staticmethod
+    def rotation_band(image: Image, band: str, fix: int, slope: float):
         '''
         Rotate band curve.
         Parameters:
@@ -44,7 +46,8 @@ class ImageEditor:
         new_image.pixels[band_id] = rotation(new_image.pixels[band_id], fix, slope)
         return new_image
     
-    def stretch_band(self, image: Image, band: str, min: int = 0, max: int = 255):
+    @staticmethod
+    def stretch_band(image: Image, band: str, min: int = 0, max: int = 255):
         '''
         Remap value range.
         Parameters:
@@ -62,7 +65,8 @@ class ImageEditor:
         new_image.pixels[band_id] = stretch(new_image.pixels[band_id], min, max)
         return new_image
     
-    def gamma_band(self, image: Image, band: str, gamma: float):
+    @staticmethod
+    def gamma_band(image: Image, band: str, gamma: float):
         '''
         Gamma compressing or expansion on single band.
         Parameters:
@@ -78,8 +82,9 @@ class ImageEditor:
         new_image = deepcopy(image)
         new_image.pixels[band_id] = gamma_trans(new_image.pixels[band_id], gamma)
         return new_image
-    
-    def histogram_match_band(self, image: Image, band: str, target: np.array):
+
+    @staticmethod
+    def histogram_match_band(image: Image, band: str, target: np.array):
         '''
         Match specific band of image to target distribution.
         Parameters:
@@ -101,7 +106,8 @@ class ImageEditor:
         new_image.pixels = np.array(new_image.pixels)
         return new_image
 
-    def conv_band(self, image: Image, band: str, kernel: np.array):
+    @staticmethod
+    def conv_band(image: Image, band: str, kernel: np.array):
         '''
         Perform filter with kernel on image. Stride must be (1,1) to ensure
         the convoluted band has the same shape with the original band.
@@ -121,7 +127,8 @@ class ImageEditor:
         new_img.pixels[band_id] = convoluted_band
         return new_img
 
-    def brightness_edit(self, image: Image, delta: int):
+    @staticmethod
+    def brightness_edit(image: Image, delta: int):
         '''
         Increase or decrease brightness.
         Parameters: 
@@ -137,7 +144,8 @@ class ImageEditor:
             new_img.pixels[band_id] = translation(new_img.pixels[band_id], delta)
         return new_img
     
-    def contrast_edit(self, image: Image, fix: int, slope: float):
+    @staticmethod
+    def contrast_edit(image: Image, fix: int, slope: float):
         '''
         Increase or decrease contrast.
         Parameters:
@@ -150,7 +158,8 @@ class ImageEditor:
             new_img.pixels[band_id] = rotation(new_img.pixels[band_id], fix, slope)
         return new_img
         
-    def stretch(self, image: Image, min: int = 0, max: int = 255):
+    @staticmethod
+    def stretch(image: Image, min: int = 0, max: int = 255):
         '''
         Contrast stretch.
         Parameters:
@@ -167,7 +176,8 @@ class ImageEditor:
             new_image.pixels[band_id] = stretch(new_image.pixels[band_id], min, max)
         return new_image
     
-    def gamma_edit(self, image: Image, gamma: float = 1):
+    @staticmethod
+    def gamma_edit(image: Image, gamma: float = 1):
         '''
         Gamma expansion or compression.
         Parameters:
@@ -181,7 +191,8 @@ class ImageEditor:
             new_img.pixels[band_id] = gamma_trans(new_img.pixels[band_id], gamma)
         return new_img
     
-    def histogram_matching(self, image: Image, target: Image):
+    @staticmethod
+    def histogram_matching(image: Image, target: Image):
         '''
         Histogram matching from `target` to `image`.
         @Parameters:
@@ -209,7 +220,8 @@ class ImageEditor:
 
         return new_image
     
-    def conv(self, image: Image, kernel: np.array):
+    @staticmethod
+    def conv(image: Image, kernel: np.array):
         '''
         Convert the image to grayscale and perform convolution on it.
         Parameters:

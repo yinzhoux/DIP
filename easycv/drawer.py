@@ -1,17 +1,16 @@
 import matplotlib.pyplot as plt
 from .image import Image
 from .utils import *
-class ImageDrawer:
-    def __init__(self):
-        pass
 
-    def show(self, imgs: list[Image], figsize: tuple = (10,10)):
+class ImageDrawer:
+    @staticmethod
+    def show(imgs: list[Image], figsize: tuple = (10,10)):
         img_cnt = len(imgs)
         assert img_cnt > 0, 'No images to show.'
         assert len(figsize) == 2, 'figsize must has two elements.'
         a, b = number_decompose_closest(img_cnt)
 
-        fig, axes = plt.subplots(nrows=b, ncols=a, figsize=figsize)
+        _, axes = plt.subplots(nrows=b, ncols=a, figsize=figsize)
 
         axes = axes.flatten()
 
@@ -29,13 +28,14 @@ class ImageDrawer:
         plt.tight_layout()
         plt.show()
     
-    def show_pdf(self, images: list[Image], figsize=(10,10)):
+    @staticmethod
+    def show_pdf(images: list[Image], figsize=(10,10)):
         img_cnt = len(images)
         assert img_cnt > 0, 'No images to show.'
         assert len(figsize) == 2, 'figsize must has two elements.'
         a, b = number_decompose_closest(img_cnt)
 
-        fig, axes = plt.subplots(nrows=b, ncols=a, figsize=figsize)
+        _, axes = plt.subplots(nrows=b, ncols=a, figsize=figsize)
         axes = axes.flatten()
 
         for i, ax in enumerate(axes):
@@ -52,7 +52,8 @@ class ImageDrawer:
         plt.tight_layout()
         plt.show()
 
-    def show_cdf(self, images: list[Image], figsize=(10,10)):
+    @staticmethod
+    def show_cdf(images: list[Image], figsize=(10,10)):
         img_cnt = len(images)
         assert img_cnt > 0, 'No images to show.'
         assert len(figsize) == 2, 'figsize must has two elements.'
