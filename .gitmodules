@@ -1,3 +1,0 @@
-[submodule "3rdparty/conv2d"]
-	path = 3rdparty/conv2d
-	url = git@github.com:yinzhoux/Convolution-From-Scratch.git
