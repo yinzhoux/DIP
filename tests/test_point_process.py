@@ -33,3 +33,4 @@ def test_histogram_statistics():
 
 def test_histogram_editing():
     image = from_array(tc.test_oneline_pixels, image_type='grayscale', image_name='oneline spectrum')
+    pass
