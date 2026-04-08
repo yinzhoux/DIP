@@ -2,6 +2,7 @@ from .drawer import ImageDrawer
 from .editor import ImageEditor
 from .image import Image
 from .operators.convolution_kernel import Kernel
+from .warper import ImageWarper
 
 from .image import from_array, from_file
 __all__ = [
@@ -10,5 +11,6 @@ __all__ = [
     'Image',
     'from_array',
     'from_file',
-    'Kernel'
+    'Kernel',
+    'ImageWarper'
 ]
