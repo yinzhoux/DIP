@@ -53,6 +53,8 @@ class Image:
     inited = False
     __pdf__ = None
     __cdf__ = None
+    image_name = None
+    pixels: np.ndarray = None
 
     def save_to(self, path_to_save: str, convert_to_grayscale: bool = False):
         '''
