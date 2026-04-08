@@ -20,8 +20,8 @@ test_rgb_pixels = np.array([
 )
 
 # with the shape of [1,1,256]. To generate grayscale pictures.
-test_oneline_pixels = np.arange(0,255, dtype=np.uint8)[np.newaxis, :]
-
+test_oneline_pixels = np.arange(0,255, dtype=np.uint8)
+test_oneline_pixels = np.array([test_oneline_pixels, test_oneline_pixels]).transpose()
 def get_current_file_dir():
     '''
     Get the parent directory of the current file.

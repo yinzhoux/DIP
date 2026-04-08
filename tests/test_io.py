@@ -1,7 +1,6 @@
 from easycv import *
 import numpy as np
-import pytest
-import test_config
+from . import test_config
 
 def test_rgb_image_from_file():
     image = from_file(

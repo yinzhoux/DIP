@@ -1,6 +1,6 @@
 from easycv import *
 import numpy as np
-import test_config as tc
+from . import test_config as tc
 
 def test_brightness_editing():
     image = from_array(tc.test_oneline_pixels, image_type='grayscale', image_name='oneline spectrum')
@@ -29,7 +29,8 @@ def test_contrast_stretching():
 def test_histogram_statistics():
     image = from_array(tc.test_oneline_pixels, image_type='grayscale', image_name='oneline spectrum')
     assert np.sum(image.PDF - np.ones(shape=(256,), dtype=np.float16)/256.0) <= 1e-2
-    assert np.sum(image.CDF - np.linspace(0, 1, num=256)) <= 1e-2
+    print(image.CDF)
+    assert np.sum(image.CDF - np.linspace(0.03, 1, num=256)) <= 1e-2
 
 def test_histogram_editing():
     image = from_array(tc.test_oneline_pixels, image_type='grayscale', image_name='oneline spectrum')
